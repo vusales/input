@@ -21,7 +21,10 @@ const FormulaInputComponent  = () => {
     selectedCategories, 
     addSelectedCategory, 
     removeSelectedCategory ,
-    setCategories , 
+    setCategories ,
+    usedOperators , 
+    addOperator , 
+    editOPerator ,  
   } = formulaInputStore();
 
   const query = useQuery({
@@ -58,6 +61,17 @@ const FormulaInputComponent  = () => {
   const handleDelete = (categoryToDelete) => {
     removeSelectedCategory(categoryToDelete);
   };
+
+
+  const handleDeleteOPerator = () => {
+
+  }
+
+  const handleAddOperator = (operator) => {
+    addOperator(operator); 
+  }
+
+  console.log("usedOP"  , usedOperators ); 
 
 
   return (
@@ -105,7 +119,29 @@ const FormulaInputComponent  = () => {
                       >
                         {item.name}
                       </MenuItem>
-                    ))}
+                    ))
+                  }
+
+                  {
+                    ["/" , "*" , "+" , "-"].filter((item) => !inputValue || item.toLowerCase().includes(inputValue.toLowerCase()))
+                    .map((item, index) => (
+                      <MenuItem
+                        {...getItemProps({
+                          key: index ,
+                          index,
+                          item,
+                          style: {
+                            backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
+                            fontWeight: selectedItem === item ? 'bold' : 'normal',
+                          },
+                          onClick: () => handleAddOperator(item) , 
+                        })}
+                      >
+                       {item}
+                      </MenuItem>
+                    ))
+                  }
+
                 </Paper>
               ) : null}
             </div>
@@ -114,12 +150,31 @@ const FormulaInputComponent  = () => {
       </Downshift>
       <div style={{ marginTop: '10px' }}>
         {selectedCategories?.map((category, index) => (
-          <Chip
-            key={`some${category.id}${index}`}
-            label={category.name}
-            onDelete={() => handleDelete(category)}
-            style={{ margin: '2px' }}
-          />
+          <>
+
+            <Chip
+              key={`some${category.id}${index}`}
+              label={category.name}
+              onDelete={() => handleDelete(category)}
+              style={{ margin: '2px' }}
+            />
+
+            { 
+              usedOperators.map(( operator , indexOP )=>{
+                if(operator.index == index) {
+                  return(
+                    <Chip
+                      key={`opera${operator.index}${indexOP}`}
+                      label={operator.operator}
+                      onDelete={() => handleDeleteOPerator(operator)}
+                      style={{ margin: '2px' }}
+                    />
+                  )
+                }
+              })
+            }
+
+          </>
         ))}
       </div>
        <button onClick={() => setCalculatedValue(eval(inputValue))} style={{ marginTop: '10px' }}>Calculate</button>

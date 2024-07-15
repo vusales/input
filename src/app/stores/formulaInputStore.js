@@ -29,6 +29,7 @@ const formulaInputStore = create((set) => ({
     }),
     addOperator: (operator) => set(
         (state) =>{
+            if(!operator) {return {usedOperators : [...state.usedOperators] }}
             let length =  state.usedOperators.length ;  
             let index = length + 1 ; 
             return  {usedOperators : [...state.usedOperators , { index , operator } ] }
