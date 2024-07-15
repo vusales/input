@@ -8,11 +8,13 @@ import { TextField, Chip, Paper, MenuItem } from '@mui/material';
 import formulaInputStore from '@/app/stores/formulaInputStore';
 import { getCategories } from '@/app/api/categoriesApi';
 import { useQuery } from 'react-query';
+import Button from '@mui/material/Button';
 
 
 const FormulaInputComponent  = () => {
 
-  const [ result , setresult ] = useState(""); 
+  const [ textResult , setTextResult ] = useState(""); 
+  const [ result , setResult ] = useState(0); 
 
   const { 
     categories, 
@@ -43,26 +45,24 @@ const FormulaInputComponent  = () => {
  
 
   const handleInputChange = (event) => {
-    const value = event.target.value;
-    // setInputValue(value);
-    try {
-      const result = eval(value); // Perform calculation
-      // setCalculatedValue(result);
-    } catch {
-      // setCalculatedValue('');
-    }
+    // clearTimeout(inputTimer) ; 
+    // const inputTimer = setTimeout(() => {
+    //   calculateResult();
+    // }, 1000);  
   };
 
   const handleSelect = (selectedItem) => { 
     console.log("selectedItem" , selectedItem ); 
-
+    let text ; 
     if(typeof selectedItem == "object") {
       addSelectedCategory(selectedItem);
+      text =  `${textResult} ${selectedItem.value } ` ; 
     }else {
       handleAddOperator(selectedItem); 
+      text = `${textResult} ${selectedItem} `  ;
     }
-
     setInputValue("");
+    setTextResult(text); 
   };
 
   const handleDelete = (categoryToDelete) => {
@@ -73,8 +73,10 @@ const FormulaInputComponent  = () => {
     addOperator(operator); 
   }
 
-  console.log("selectedCat"  , selectedCategories ); 
-  console.log("usedOP"  , usedOperators ); 
+  const calculateResult = () => {
+    let result = eval(textResult) ; 
+    setResult(result); 
+  }
 
 
   return (
@@ -96,9 +98,6 @@ const FormulaInputComponent  = () => {
             selectedItem,
             initialSelectedItem , 
           }) =>{ 
-            console.log("initialSelectedItem" , initialSelectedItem); 
-            console.log("getMenuProps" , getMenuProps()); 
-
             return (
             <div>
               <TextField
@@ -187,16 +186,18 @@ const FormulaInputComponent  = () => {
               })
               :null
             }
-
           </>
         ))}
       </div>
-       <button onClick={() => setCalculatedValue(eval(inputValue))} style={{ marginTop: '10px' }}>Calculate</button>
-      {/* {calculatedValue && (
-        <div>
-          <strong>Result:</strong> {calculatedValue}
-        </div>
-      )} */}
+
+      <div style={{marginTop: "10px"}}>{result||""}</div>
+
+      <Button 
+      onClick={() => calculateResult() } 
+      variant="outlined" 
+      sx={{marginTop: "10px"}}
+      >Calculate</Button>
+
     </div>
   );
 };
