@@ -66,6 +66,7 @@ const FormulaInputComponent  = () => {
   };
 
   const handleDelete = (categoryToDelete) => {
+    // i have to change textResult value 
     removeSelectedCategory(categoryToDelete);
   };
 
