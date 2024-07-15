@@ -54,7 +54,14 @@ const FormulaInputComponent  = () => {
   };
 
   const handleSelect = (selectedItem) => { 
-    addSelectedCategory(selectedItem);
+    console.log("selectedItem" , selectedItem ); 
+
+    if(typeof selectedItem == "object") {
+      addSelectedCategory(selectedItem);
+    }else {
+      handleAddOperator(selectedItem); 
+    }
+
     setInputValue("");
   };
 
@@ -62,15 +69,11 @@ const FormulaInputComponent  = () => {
     removeSelectedCategory(categoryToDelete);
   };
 
-
-  const handleDeleteOPerator = () => {
-
-  }
-
   const handleAddOperator = (operator) => {
     addOperator(operator); 
   }
 
+  console.log("selectedCat"  , selectedCategories ); 
   console.log("usedOP"  , usedOperators ); 
 
 
@@ -82,76 +85,85 @@ const FormulaInputComponent  = () => {
         onSelect={handleSelect}
         itemToString={(item) => (item ? item.name : '')}
       >
-        {({
-          getInputProps,
-          getItemProps,
-          getMenuProps,
-          isOpen,
-          inputValue,
-          highlightedIndex,
-          selectedItem,
-        }) => (
-          <div>
-            <TextField
-              {...getInputProps({
-                placeholder: 'Enter category or math operation',
-                onChange: handleInputChange,
-              })}
-              fullWidth
-              variant="outlined"
-            />
-            <div {...getMenuProps()}>
-              {isOpen ? (
-                <Paper>
-                  {categories
-                    .filter((item) => !inputValue || item.name.toLowerCase().includes(inputValue.toLowerCase()))
-                    .map((item, index) => (
-                      <MenuItem
-                        {...getItemProps({
-                          key: item.id,
-                          index,
-                          item,
-                          style: {
-                            backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
-                            fontWeight: selectedItem === item ? 'bold' : 'normal',
-                          },
-                        })}
-                      >
-                        {item.name}
-                      </MenuItem>
-                    ))
-                  }
+        {
+          ({
+            getInputProps,
+            getItemProps,
+            getMenuProps,
+            isOpen,
+            inputValue,
+            highlightedIndex,
+            selectedItem,
+            initialSelectedItem , 
+          }) =>{ 
+            console.log("initialSelectedItem" , initialSelectedItem); 
+            console.log("getMenuProps" , getMenuProps()); 
 
-                  {
-                    ["/" , "*" , "+" , "-"].filter((item) => !inputValue || item.toLowerCase().includes(inputValue.toLowerCase()))
-                    .map((item, index) => (
-                      <MenuItem
-                        {...getItemProps({
-                          key: index ,
-                          index,
-                          item,
-                          style: {
-                            backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
-                            fontWeight: selectedItem === item ? 'bold' : 'normal',
-                          },
-                          onClick: () => handleAddOperator(item) , 
-                        })}
-                      >
-                       {item}
-                      </MenuItem>
-                    ))
-                  }
+            return (
+            <div>
+              <TextField
+                {...getInputProps({
+                  placeholder: 'Enter category or math operation',
+                  onChange: handleInputChange,
+                })}
+                fullWidth
+                variant="outlined"
+              />
+              <div {...getMenuProps()}>
+                {isOpen ?
+                <>
+                  <Paper>
+                    {categories
+                      .filter((item) => !inputValue || item.name.toLowerCase().includes(inputValue.toLowerCase()))
+                      .map((item, index) => (
+                        <MenuItem
+                          {...getItemProps({
+                            key: item.id,
+                            index,
+                            item,
+                            style: {
+                              backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
+                              fontWeight: selectedItem === item ? 'bold' : 'normal',
+                            },
+                          })}
+                        >
+                          {item.name}
+                        </MenuItem>
+                      ))
+                    }
+                  </Paper>
 
-                </Paper>
-              ) : null}
+                  <Paper>
+                    {
+                      ["/" , "*" , "+" , "-"].filter((item) => !inputValue || item.toLowerCase().includes(inputValue.toLowerCase()))
+                      .map((item, index) => (
+                        <MenuItem
+                          {...getItemProps({
+                            key: index ,
+                            index,
+                            item,
+                            style: {
+                              backgroundColor: highlightedIndex === index ? 'lightgray' : 'white',
+                              fontWeight: selectedItem === item ? 'bold' : 'normal',
+                            },
+                            // onClick: () => handleAddOperator(item) , 
+                          })}
+                        >
+                        {item}
+                        </MenuItem>
+                      ))
+                    }
+                  </Paper>
+                </> 
+                 : null}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        }
       </Downshift>
       <div style={{ marginTop: '10px' }}>
         {selectedCategories?.map((category, index) => (
           <>
-
             <Chip
               key={`some${category.id}${index}`}
               label={category.name}
@@ -159,19 +171,21 @@ const FormulaInputComponent  = () => {
               style={{ margin: '2px' }}
             />
 
-            { 
-              usedOperators.map(( operator , indexOP )=>{
-                if(operator.index == index) {
-                  return(
+            {
+              usedOperators&&usedOperators.length>0?
+              usedOperators.map((oprt, indexOprt)=>{ 
+                if(index == indexOprt) {
+                  return (
                     <Chip
-                      key={`opera${operator.index}${indexOP}`}
-                      label={operator.operator}
-                      onDelete={() => handleDeleteOPerator(operator)}
+                      key={`some${oprt.index}${indexOprt}`}
+                      label={oprt.operator}
+                      onDelete={() => {}}
                       style={{ margin: '2px' }}
                     />
                   )
                 }
               })
+              :null
             }
 
           </>
